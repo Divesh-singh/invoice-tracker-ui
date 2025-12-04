@@ -19,7 +19,6 @@ export default function LoginPage() {
     setError(null)
     try {
       const res = await login({ username, password })
-      console.log('Login response:', res)
       if (res && res.token) setAuthToken(res.token)
 
       // After successful login, call /me to fetch user details and set in context
