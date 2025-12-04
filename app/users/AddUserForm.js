@@ -49,8 +49,6 @@ export default function AddUserForm() {
 
     const res = await register({ firstName, lastName, userTypeId, username, password, confirmPassword })
 
-    console.log("Register response:", res);
-
     //TODO: HANDLE ERROR IN A GLOBAL ALERT BANNER
 
     if (res && res.user) {
