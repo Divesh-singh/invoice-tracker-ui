@@ -24,7 +24,8 @@ export default function AddBillForm() {
     form.append("amount_received", amountReceived);
     if (file) form.append("image", file);
 
-    const res = await fetch("/api/bills", {
+    // send RAW fetch request instead of using the service to handle FormData properly
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/bill`, {
       method: "POST",
       credentials: "include",
       body: form,

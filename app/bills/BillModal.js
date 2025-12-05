@@ -52,14 +52,20 @@ export default function BillModal({ billId, open, onClose }) {
   const submitPayment = async (e) => {
     e.preventDefault();
 
+    // Remove if we want to allow overpayments
+    if (Number(amountReceived) > remaining) {
+    alert(`Amount exceeds remaining balance: ₹${remaining}`);
+    return;
+  }
     const form = new FormData();
     form.append("name", bill.name);
     form.append("description", desc);
+    form.append("bill_amount", bill.bill_amount);
     form.append("amount_received", amountReceived);
     if (file) form.append("image", file);
 
-    const res = await fetch(`/api/bills/${billId}/payment`, {
-      method: "POST",
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/bill/${billId}/payment`, {
+      method: "PUT",
       credentials: "include",
       body: form,
     });
