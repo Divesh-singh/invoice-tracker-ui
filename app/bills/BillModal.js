@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getBillById } from "../../services"; // <-- IMPORTANT
+import { getBillById } from "../../services";
+import { useUser } from '../../context/UserContext'
 
 import {
   Dialog,
@@ -24,6 +25,9 @@ export default function BillModal({ billId, open, onClose }) {
   const [amountReceived, setAmountReceived] = useState("");
   const [desc, setDesc] = useState("");
   const [file, setFile] = useState(null);
+
+  const { user, setUser } = useUser()
+  const userAccessLevel = user?.user?.userType?.access_level || 0;
 
   useEffect(() => {
 
@@ -127,7 +131,7 @@ export default function BillModal({ billId, open, onClose }) {
             <h3 className="text-md font-medium mb-2">Payment Records</h3>
 
             {bill.payments.length === 0 && (
-                <p className="text-gray-500 text-sm">No payments yet.</p>
+                <p className="text-gray-500 text-sm">{userAccessLevel >= 2 ? 'No payments yet, update payment if avaliable' : 'No payments yet, ask admins to update payment' }</p>
             )}
 
             <div className="space-y-2">
@@ -156,8 +160,8 @@ export default function BillModal({ billId, open, onClose }) {
             </div>
             </div>
 
-            {/* RECORD PAYMENT */}
-            {bill && totalPaid < Number(bill.bill_amount) && (
+            {/* RECORD PAYMENT -if admin and total paid is less than remaing balance */}
+            {userAccessLevel >= 2 && bill && totalPaid < Number(bill.bill_amount) && (
             <form onSubmit={submitPayment} className="space-y-4">
 
                 <div>

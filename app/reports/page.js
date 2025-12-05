@@ -4,8 +4,21 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getbillReport } from "@/services";
+import { useUser } from '../../context/UserContext'
 
 export default function BillReportPage() {
+  const { user, setUser } = useUser()
+  const userAccessLevel = user?.user?.userType?.access_level || 0;
+
+  if (userAccessLevel < 2) {
+    return (
+      <div className="p-8">
+        <h1 className="text-xl font-semibold text-red-600">Access Denied</h1>
+        <p>You do not have permission to view this page.</p>
+      </div>
+    );
+  }
+  
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reportData, setReportData] = useState(null);
