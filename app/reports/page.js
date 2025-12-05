@@ -14,22 +14,27 @@ export default function BillReportPage() {
   const fetchReport = async () => {
     if (!startDate || !endDate) return alert("Select both start and end dates");
 
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // End of today
+
+    if (start > end) return alert("Start date cannot be after end date");
+    if (end > today) return alert("End date cannot exceed today");
+
     setLoading(true);
 
     // Construct ISO timestamps for start/end of day
-    const startTime = new Date(startDate);
-    startTime.setHours(0, 0, 0, 0);
-
-    const endTime = new Date(endDate);
-    endTime.setHours(23, 59, 59, 999);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
 
     try {
-      const res = await getbillReport(startTime.toISOString(), endTime.toISOString());
+      const res = await getbillReport(start.toISOString(), end.toISOString());
 
-      if (res && res.billData ) {
+      if (res && res.billData) {
         setReportData(res);
       } else {
-        alert(data.message || "Failed to fetch report");
+        alert(res?.message || "Failed to fetch report");
       }
     } catch (err) {
       console.error(err);
@@ -38,6 +43,7 @@ export default function BillReportPage() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="p-4 space-y-6">
@@ -58,6 +64,7 @@ export default function BillReportPage() {
           <Input
             type="date"
             value={endDate}
+            max={new Date().toISOString().split("T")[0]}
             onChange={(e) => setEndDate(e.target.value)}
           />
         </div>
@@ -96,11 +103,12 @@ export default function BillReportPage() {
                     <div className="font-semibold">{bill.name}</div>
                     <div className="text-sm text-gray-600">{bill.description}</div>
                   </div>
-                  <div className="grid grid-cols-3 text-sm gap-2 text-right min-w-[220px]">
-                    <div>Bill: ₹{bill.bill_amount}</div>
-                    <div>Paid: ₹{paidAmount}</div>
-                    <div>Remaining: ₹{remaining}</div>
+                  <div className="flex gap-4 min-w-[300px]]">
+                    <div className="w-50">Bill: ₹{bill.bill_amount}</div>
+                    <div className="w-50">Paid: ₹{paidAmount}</div>
+                    <div className="w-50">Remaining: ₹{remaining}</div>
                   </div>
+
                   {bill.invoice_pdf_url && (
                     <a
                       href={bill.invoice_pdf_url}

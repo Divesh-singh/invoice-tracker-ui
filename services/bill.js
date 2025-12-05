@@ -19,6 +19,10 @@ export function getbillReport(startTime, endTime, opts = {}) {
   return get(`/api/bill/report?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`, opts);
 }
 
+export function createBill(data, opts = {}) {
+  return post('/api/bill', data, opts);
+}
 
 
-export default { getAllBills, getBillById, getbillReport };
+
+export default { getAllBills, getBillById, getbillReport, createBill };
